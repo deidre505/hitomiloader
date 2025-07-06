@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manga Opener</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+        .tab-container {
+            display: flex;
+            background-color: #333;
+        }
+        .tab {
+            padding: 15px 20px;
+            cursor: pointer;
+            color: white;
+            border: none;
+            outline: none;
+            background-color: #333;
+            font-size: 16px;
+        }
+        .tab:hover {
+            background-color: #555;
+        }
+        .tab.active {
+            background-color: #ddd;
+            color: black;
+        }
+        .tab-content {
+            padding: 20px;
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .container {
+            text-align: center;
+        }
+        input {
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+        #stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        .stats-box {
+            width: 45%;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: white;
+        }
+        .stats-box h3 {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="tab-container">
+        <button class="tab active" onclick="openTab('search')">품번 검색</button>
+        <button class="tab" onclick="openTab('stats')">통계</button>
+    </div>
+
+    <div id="search" class="tab-content active">
+        <div class="container">
+            <h1>품번 검색</h1>
+            <input type="text" id="manga-number" placeholder="예: 123456">
+            <button id="open-button">열기</button>
+            <p id="error-message" class="error"></p>
+        </div>
+    </div>
+
+    <div id="stats" class="tab-content">
+        <div class="container">
+            <h2>통계</h2>
+            <select id="period-select">
+                <option value="week">최근 1주</option>
+                <option value="month">최근 1개월</option>
+                <option value="half_year">최근 6개월</option>
+                <option value="year">최근 1년</option>
+                <option value="all">전체</option>
+            </select>
+            <div id="stats-container">
+                <div class="stats-box">
+                    <h3>Top 10 품번</h3>
+                    <ol id="top-numbers-list"></ol>
+                </div>
+                <div class="stats-box">
+                    <h3>Top 10 태그</h3>
+                    <ol id="top-tags-list"></ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        function openTab(tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tab");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            event.currentTarget.className += " active";
+
+            if (tabName === 'stats') {
+                fetchStats();
+            }
+        }
+    </script>
+</body>
+</html>

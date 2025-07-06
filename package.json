@@ -1,0 +1,14 @@
+{
+  "name": "manga-opener",
+  "version": "1.0.0",
+  "description": "A simple website to open manga pages.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "puppeteer": "^22.13.0",
+    "sqlite3": "^5.1.7"
+  }
+}
