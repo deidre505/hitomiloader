@@ -1,3 +1,12 @@
+
+window.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const mangaNumberFromUrl = urlParams.get('number');
+    if (mangaNumberFromUrl) {
+        document.getElementById('manga-number').value = mangaNumberFromUrl;
+    }
+});
+
 document.getElementById("open-button").addEventListener("click", async () => {
     const mangaNumber = document.getElementById("manga-number").value;
     const errorMessage = document.getElementById("error-message");
@@ -75,3 +84,62 @@ if (periodSelect) {
 if (document.getElementById('stats') && document.getElementById('stats').classList.contains('active')) {
     fetchStats();
 }
+
+async function fetchBookmarks() {
+    const bookmarkList = document.getElementById('bookmark-list');
+    bookmarkList.innerHTML = ''; // Clear existing bookmarks
+
+    const extensionIdMeta = document.querySelector('meta[name="hitomi-addon-extension-id"]');
+    if (!extensionIdMeta) {
+        bookmarkList.innerHTML = '<li>Hitomi Addon extension not found.</li>';
+        return;
+    }
+    const extensionId = extensionIdMeta.content;
+
+    if (typeof chrome !== 'undefined' && chrome.runtime) {
+        try {
+            const response = await new Promise((resolve, reject) => {
+                chrome.runtime.sendMessage(extensionId, { action: "getReadLaterBookmarks" }, response => {
+                    if (chrome.runtime.lastError) {
+                        reject(chrome.runtime.lastError);
+                    } else {
+                        resolve(response);
+                    }
+                });
+            });
+
+            if (response && response.bookmarks && response.bookmarks.length > 0) {
+                response.bookmarks.forEach(bookmark => {
+                    const li = document.createElement('li');
+                    li.textContent = bookmark;
+
+                    const openButton = document.createElement('button');
+                    openButton.textContent = '열기';
+                    openButton.style.marginLeft = '10px';
+                    openButton.addEventListener('click', async () => {
+                        const response = await fetch(`/open?number=${bookmark}`);
+                        const data = await response.json();
+                        if (data.success) {
+                            window.open(data.url, "_blank");
+                        } else {
+                            alert(data.message);
+                        }
+                    });
+
+                    li.appendChild(openButton);
+                    bookmarkList.appendChild(li);
+                });
+            } else {
+                bookmarkList.innerHTML = '<li>저장된 북마크가 없습니다.</li>';
+            }
+        } catch (error) {
+            console.error("Error fetching bookmarks from extension:", error);
+            bookmarkList.innerHTML = '<li>북마크를 불러오는 데 실패했습니다. 확장 프로그램이 설치되어 있고 활성화되어 있는지 확인하세요.</li>';
+        }
+    } else {
+        bookmarkList.innerHTML = '<li>Chrome 확장 프로그램 환경이 아닙니다.</li>';
+    }
+}
+
+document.getElementById('refresh-bookmarks').addEventListener('click', fetchBookmarks);
+

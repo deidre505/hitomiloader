@@ -67,12 +67,26 @@
         .stats-box h3 {
             text-align: center;
         }
+        #bookmark-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        #bookmark-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            background-color: white;
+        }
     </style>
 </head>
 <body>
     <div class="tab-container">
         <button class="tab active" onclick="openTab('search')">품번 검색</button>
         <button class="tab" onclick="openTab('stats')">통계</button>
+        <button class="tab" onclick="openTab('bookmarks')">북마크</button>
     </div>
 
     <div id="search" class="tab-content active">
@@ -86,7 +100,7 @@
 
     <div id="stats" class="tab-content">
         <div class="container">
-            <h2>통계</h2>
+            <h1>통계</h1>
             <select id="period-select">
                 <option value="week">최근 1주</option>
                 <option value="month">최근 1개월</option>
@@ -107,6 +121,14 @@
         </div>
     </div>
 
+    <div id="bookmarks" class="tab-content">
+        <div class="container">
+            <h1>북마크</h1>
+            <button id="refresh-bookmarks">새로고침</button>
+            <ul id="bookmark-list"></ul>
+        </div>
+    </div>
+
     <script src="script.js"></script>
     <script>
         function openTab(tabName) {
@@ -124,6 +146,8 @@
 
             if (tabName === 'stats') {
                 fetchStats();
+            } else if (tabName === 'bookmarks') {
+                fetchBookmarks();
             }
         }
     </script>
